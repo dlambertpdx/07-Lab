@@ -5,6 +5,7 @@ const cors = require('cors');
 
 const mapsApi = require('./lib/maps-api');
 const weatherApi = require('./lib/weather-api');
+const eventbriteApi = require('./lib/eventbrite-api');
 
 const app = express();
 const PORT = process.env.PORT;
@@ -26,7 +27,6 @@ app.get('/location', (request, response) => {
     
 });
 
-// make asynchronous
 app.get('/weather', (request, response) => {
     const latitude = request.query.latitude;
     const longitude = request.query.longitude;
@@ -41,6 +41,21 @@ app.get('/weather', (request, response) => {
             });
         });
     
+});
+
+app.get('/events', (request, response) => {
+    const latitude = request.query.latitude;
+    const longitude = request.query.longitude;
+
+    eventbriteApi.getEvent(latitude, longitude)
+        .then(event => {
+            response.json(event);
+        })
+        .catch(err => {
+            response.status(500).json({
+                error: err.message || err
+            });
+        });
 });
 
 app.listen(PORT, () => {
